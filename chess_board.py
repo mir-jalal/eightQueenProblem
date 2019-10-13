@@ -9,6 +9,8 @@ import _thread
 class chess_board:
     def __init__(self, board_size):
         self.chess_board_arr = []
+        self.possible_solutions = []
+        possible_solution_counter = 0
 
         self.root = tkinter.Tk()
         self.default_size = board_size * 60
@@ -23,9 +25,9 @@ class chess_board:
 
         self.root.title(str(board_size) + " queen Problem")
         self.root.minsize(width=self.default_size +
-                          150, height=self.default_size)
+                          200, height=self.default_size)
         self.root.maxsize(width=self.default_size +
-                          150, height=self.default_size)
+                          200, height=self.default_size)
 
         self.canvas = tkinter.Canvas(
             self.root, width=self.default_size, height=self.default_size)
@@ -35,45 +37,66 @@ class chess_board:
 
         self.brute_force_button = tkinter.Button(self.root, text="Find Solution", command=self.branch_bound)
         self.brute_force_button.place(x=self.default_size+20, y=10)
-        self.brute_force_button.config(width=10)
+        self.brute_force_button.config(width=15)
 
         self.clear_button = tkinter.Button(self.root, text="Clear", command=self.clear)
         self.clear_button.place(x=self.default_size+20, y=50)
-        self.clear_button.config(width=10)
+        self.clear_button.config(width=15)
+
+        self.next_button = tkinter.Button(self.root, text="Next Solution", command=self.next_solution)
+        self.next_button.place(x=self.default_size+20, y=90)
+        self.next_button.config(width=15)
+
+        self.previous_button = tkinter.Button(self.root, text="Previous Solution", command=self.previous_solution)
+        self.previous_button.place(x=self.default_size+20, y=130)
+        self.previous_button.config(width=15)
 
         self.string_message = tkinter.StringVar()
         self.string_message.set("")
 
         self.message_label = tkinter.Label(self.root, textvariable=self.string_message)
-        self.message_label.place(x=self.default_size+20, y=90)
-        self.message_label.config(fg="#ff0000", font=(20))
+        self.message_label.place(x=self.default_size+20, y=170)
+        self.message_label.config(fg="#ff0000", font=("Calibri", 15))
 
         self.root.mainloop()
 
-    def find_solution(self):
+    def next_solution(self):
+        n=len(self.possible_solutions)
+        m = len(self.chess_board_arr)
+        if  n == 0:
+            return
+        elif n>self.possible_solution_counter+1:
+            self.possible_solution_counter = self.possible_solution_counter + 1
+        elif n==self.possible_solution_counter+1:
+            self.possible_solution_counter=0
+        self.chess_board_arr = self.possible_solutions[self.possible_solution_counter]
+        for i in range(m):
+            for j in range(m):
+                self.delete_figure(i, j)
+        self.string_message.set(str(self.possible_solution_counter) + ". Solution")
+        self.refresh_board()
 
-        history = []
-        if(eight_queen_solution.all_safe_queens(self.chess_board_arr)):
-            self.brute_force([], self.chess_board_arr, eight_queen_solution.queen_counter(self.chess_board_arr))
-            self.refresh_board()
-
-
-    def brute_force(self,history, arr, count):
-        if(count==len(arr)):
-            return True
-        for i in range(len(arr)):
-            for j in range(len(arr)):
-                if (not eight_queen_solution.is_unsafe(arr, i, j)) and arr[i][j]==0:
-                    arr[i][j]=1
-                    if self.brute_force(history, arr, count+1):
-                        return True
-                    arr[i][j] = 0
-
-        return False
+    def previous_solution(self):
+        n=len(self.possible_solutions)
+        m = len(self.chess_board_arr)
+        if  n == 0:
+            return
+        elif 0<self.possible_solution_counter:
+            self.possible_solution_counter = self.possible_solution_counter - 1
+        elif self.possible_solution_counter==0:
+            self.possible_solution_counter=n-1
+        self.chess_board_arr = self.possible_solutions[self.possible_solution_counter]
+        for i in range(m):
+            for j in range(m):
+                self.delete_figure(i, j)
+        self.string_message.set(str(self.possible_solution_counter) + ". Solution")
+        self.refresh_board()
 
     def branch_bound(self):
         if not eight_queen_solution.all_safe_queens(self.chess_board_arr):
             return
+        self.possible_solutions = []
+        self.possible_solution_counter = 0
         right_dioganal_arr = []
         left_dioganal_arr = []
         row_arr = []
@@ -103,15 +126,28 @@ class chess_board:
                     row_arr[i]=True
                     col_arr[j]=True
 
-        if self.solve_algorithm(0, right_dioganal_arr, left_dioganal_arr, right_dioganal_arr_look, left_dioganal_arr_look, row_arr,col_arr):
-            self.string_message.set("")
+        self.solve_algorithm(0, right_dioganal_arr, left_dioganal_arr, right_dioganal_arr_look, left_dioganal_arr_look, row_arr,col_arr)
+        if len(self.possible_solutions)>0:
+            self.chess_board_arr = self.possible_solutions[0]
+            self.string_message.set("0. Solution")
+            self.message_label.config(fg="#00a866")
             self.refresh_board()
         else:
             self.string_message.set("No solution")
+            self.message_label.config(fg="#ff0000")
 
     def solve_algorithm(self, j, right_dioganal_arr, left_dioganal_arr,right_dioganal_arr_look, left_dioganal_arr_look, row_arr, col_arr):
         if(j>=len(self.chess_board_arr)):
-            return True
+            new_board = []
+            for elm in self.chess_board_arr:
+                temp_board = []
+                for i in elm:
+                    temp_board.append(i)
+                new_board.append(temp_board)
+            self.possible_solutions.append(new_board)
+            if len(self.possible_solutions)==15000:
+                return True
+            return False
         if col_arr[j] == True:
             return self.solve_algorithm(j+1, right_dioganal_arr, left_dioganal_arr, right_dioganal_arr_look, left_dioganal_arr_look, row_arr, col_arr)
 
@@ -138,6 +174,9 @@ class chess_board:
 
 
     def clear(self):
+        self.possible_solution_counter = 0
+        self.possible_solutions = []
+        self.string_message.set("")
         self.create_canvas(int(self.default_size/60))
 
     def mouse_click(self, event):
@@ -150,6 +189,7 @@ class chess_board:
             self.delete_figure(x, y)
             self.chess_board_arr[y][x] = 0
 
+        self.string_message.set("")
         self.refresh_board()
 
     def refresh_board(self):
