@@ -97,36 +97,36 @@ class chess_board:
             return
         self.possible_solutions = []
         self.possible_solution_counter = 0
-        right_dioganal_arr = []
-        left_dioganal_arr = []
+        right_diagonal_arr = []
+        left_diagonal_arr = []
         row_arr = []
         col_arr = []
         n = len(self.chess_board_arr)
 
         for i in range(n):
-            temp_right_dioganal_arr = []
-            temp_left_dioganal_arr = []
+            temp_right_diagonal_arr = []
+            temp_left_diagonal_arr = []
             for j in range(n):
-                temp_right_dioganal_arr.append(i + j)
-                temp_left_dioganal_arr.append(i-j+n-1)
-            right_dioganal_arr.append(temp_right_dioganal_arr)
-            left_dioganal_arr.append(temp_left_dioganal_arr)
+                temp_right_diagonal_arr.append(i + j)
+                temp_left_diagonal_arr.append(i-j+n-1)
+            right_diagonal_arr.append(temp_right_diagonal_arr)
+            left_diagonal_arr.append(temp_left_diagonal_arr)
 
         row_arr = [False] * n
         col_arr = [False] * n
         x=2*n-1
-        right_dioganal_arr_look = [False] * x
-        left_dioganal_arr_look = [False] * x
+        right_diagonal_arr_look = [False] * x
+        left_diagonal_arr_look = [False] * x
 
         for i in range(n):
             for j in range(n):
                 if self.chess_board_arr[i][j]==1:
-                    right_dioganal_arr_look[right_dioganal_arr[i][j]]=True
-                    left_dioganal_arr_look[left_dioganal_arr[i][j]]=True
+                    right_diagonal_arr_look[right_diagonal_arr[i][j]]=True
+                    left_diagonal_arr_look[left_diagonal_arr[i][j]]=True
                     row_arr[i]=True
                     col_arr[j]=True
 
-        self.solve_algorithm(0, right_dioganal_arr, left_dioganal_arr, right_dioganal_arr_look, left_dioganal_arr_look, row_arr,col_arr)
+        self.solve_algorithm(0, right_diagonal_arr, left_diagonal_arr, right_diagonal_arr_look, left_diagonal_arr_look, row_arr,col_arr)
         if len(self.possible_solutions)>0:
             self.chess_board_arr = self.possible_solutions[0]
             self.string_message.set("0. Solution")
@@ -136,7 +136,7 @@ class chess_board:
             self.string_message.set("No solution")
             self.message_label.config(fg="#ff0000")
 
-    def solve_algorithm(self, j, right_dioganal_arr, left_dioganal_arr,right_dioganal_arr_look, left_dioganal_arr_look, row_arr, col_arr):
+    def solve_algorithm(self, j, right_diagonal_arr, left_diagonal_arr,right_diagonal_arr_look, left_diagonal_arr_look, row_arr, col_arr):
         if(j>=len(self.chess_board_arr)):
             new_board = []
             for elm in self.chess_board_arr:
@@ -149,26 +149,26 @@ class chess_board:
                 return True
             return False
         if col_arr[j] == True:
-            return self.solve_algorithm(j+1, right_dioganal_arr, left_dioganal_arr, right_dioganal_arr_look, left_dioganal_arr_look, row_arr, col_arr)
+            return self.solve_algorithm(j+1, right_diagonal_arr, left_diagonal_arr, right_diagonal_arr_look, left_diagonal_arr_look, row_arr, col_arr)
 
         for i in range(len(self.chess_board_arr)):
-            if eight_queen_solution.is_safe(i, j, right_dioganal_arr, left_dioganal_arr, right_dioganal_arr_look, left_dioganal_arr_look, row_arr):
+            if eight_queen_solution.is_safe(i, j, right_diagonal_arr, left_diagonal_arr, right_diagonal_arr_look, left_diagonal_arr_look, row_arr):
                 self.chess_board_arr[i][j] = 1
                 row_arr[i] = True
-                right_dioganal_arr_look[right_dioganal_arr[i][j]] = True
-                left_dioganal_arr_look[left_dioganal_arr[i][j]] = True
+                right_diagonal_arr_look[right_diagonal_arr[i][j]] = True
+                left_diagonal_arr_look[left_diagonal_arr[i][j]] = True
                 #self.put_figure(j, i, False)
                 #self.root.update()
 
-                if self.solve_algorithm(j+1, right_dioganal_arr,left_dioganal_arr,right_dioganal_arr_look,left_dioganal_arr_look, row_arr, col_arr):
+                if self.solve_algorithm(j+1, right_diagonal_arr,left_diagonal_arr,right_diagonal_arr_look,left_diagonal_arr_look, row_arr, col_arr):
                     return True
 
                 #self.delete_figure(j,i)
                 #self.root.update()
                 self.chess_board_arr[i][j] = 0
                 row_arr[i] = False
-                right_dioganal_arr_look[right_dioganal_arr[i][j]] = False
-                left_dioganal_arr_look[left_dioganal_arr[i][j]] = False
+                right_diagonal_arr_look[right_diagonal_arr[i][j]] = False
+                left_diagonal_arr_look[left_diagonal_arr[i][j]] = False
 
         return False
 

@@ -34,8 +34,8 @@ def all_safe_queens(arr):
 
     return True
 
-def is_safe(i, j, right_dioganal_arr, left_dioganal_arr, right_dioganal_arr_look, left_dioganal_arr_look, row_arr):
-    if right_dioganal_arr_look[right_dioganal_arr[i][j]] or left_dioganal_arr_look[left_dioganal_arr[i][j]] or row_arr[i]:
+def is_safe(i, j, right_diagonal_arr, left_diagonal_arr, right_diagonal_arr_look, left_diagonal_arr_look, row_arr):
+    if right_diagonal_arr_look[right_diagonal_arr[i][j]] or left_diagonal_arr_look[left_diagonal_arr[i][j]] or row_arr[i]:
         return False
     return True
 
