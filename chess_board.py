@@ -25,7 +25,7 @@ class chess_board:
 
         self.root.title(str(board_size) + " queen Problem")
         self.root.minsize(width=self.default_size +
-                          200, height=self.default_size)
+                          200, height=self.default_size if self.default_size>=210 else 210)
         self.root.maxsize(width=self.default_size +
                           200, height=self.default_size)
 

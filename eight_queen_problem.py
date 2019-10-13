@@ -3,8 +3,6 @@ import tkinter
 
 def start_program():
     n=int(text_box.get())
-    if n<4:
-        return
     root.destroy()
     chess_board.chess_board(n)
 
